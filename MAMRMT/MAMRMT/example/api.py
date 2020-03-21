@@ -1,5 +1,7 @@
-from python.builtin.env import *
-from python.Test import *
+import random
+from MAMRMT.frame.builtin.env import *
+from MAMRMT.frame.Test import *
+from MAMRMT.frame.environment import *
 if __name__ == "__main__":
     # init the game
     env = environment(800, 600)
@@ -18,7 +20,7 @@ if __name__ == "__main__":
     # get group handles
 
     # take action
-    # simulate one step
+    # simulate oe step
     # get reward
     # clear dead agents
     # reach max number of cycles

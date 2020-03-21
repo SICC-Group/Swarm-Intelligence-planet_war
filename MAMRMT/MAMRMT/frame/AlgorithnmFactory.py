@@ -1,4 +1,4 @@
-from python.Role import *
+from MAMRMT.frame.Role import *
 #抽象工厂
 class AgentFactory:
     def createManager(self,roleId):

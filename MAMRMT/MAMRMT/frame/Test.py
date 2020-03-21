@@ -1,6 +1,6 @@
-from python.AlgorithnmFactory import *
+from MAMRMT.frame.AlgorithnmFactory import *
 import random
-import python.blackboard
+import MAMRMT.frame.blackboard
 
 class Test:
     def __init__(self,factory):

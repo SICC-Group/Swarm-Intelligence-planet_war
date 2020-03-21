@@ -16,12 +16,13 @@ class Enemy(pygame.sprite.Sprite):
         else:
             image = pygame.image.load('../source/LXPlane.png').convert()
         self.image = pygame.transform.scale(image, (32, 32))
-        self.init_position = [10, 100, 200, 300, 400, 500, 600, 700, 790]  # 表示列
+        self.init_position = [10, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 790]  # 表示列
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect(
-            center=(self.init_position[random.randint(0, 8)], 0)) # 从上往下，第0行，position为列
+            center=(self.init_position[random.randint(0, 14)], 0)) # 从上往下，第0行，position为列
         self.speed = 1
         self.n_enemy = 100
+        self.id = 0
 
     def update(self):
         self.rect.move_ip(0, self.speed)

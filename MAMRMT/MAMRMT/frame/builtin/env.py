@@ -2,8 +2,8 @@ import pygame
 import random
 import os.path
 from datetime import datetime
-from python.builtin.built import *
-from python.Test import *
+from MAMRMT.frame.builtin.built import *
+from MAMRMT.frame.Test import *
 
 class environment:
 
@@ -18,7 +18,7 @@ class environment:
         self.background.fill((135, 206, 250))
         # 自定义事件(敌机、云朵、发射子弹)
         self.ADDENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADDENEMY, 1000)
+        pygame.time.set_timer(self.ADDENEMY, 300)
         self.ADDCLOUD = pygame.USEREVENT + 2
         pygame.time.set_timer(self.ADDCLOUD, 1000)
         self.ADDBULLET = pygame.USEREVENT + 3
@@ -36,10 +36,12 @@ class environment:
         self.all_sprites.add(mngAgent)
         for exeAgent in agent.values():
             self.all_sprites.add(exeAgent)
+        agent[1].rect.move_ip(300, 0)
         pygame.display.flip()
         # 初始化参数
         start_time = datetime.now()
         player_hit_enemies = 0
+        enemy_num = 0
         running = True
         game_over = False
         # main loop
@@ -55,7 +57,9 @@ class environment:
                     running = False
                 # 敌机
                 elif event.type == self.ADDENEMY:
+                    enemy_num += 1
                     new_enemy = Enemy(self.size)
+                    new_enemy.id = enemy_num
                     self.enemies.add(new_enemy)
                     self.all_sprites.add(new_enemy)
                 # 云朵
@@ -74,46 +78,89 @@ class environment:
                         pass
             self.clouds.update()
             self.enemies.update()
-            #敌机位置
+
+            # e_pos 记录当前页面的敌机位置
+            emy_pos = []
             for enemy in self.enemies.sprites():
-                print(enemy.rect)
+                print("敌机编号：", enemy.id)
+                print("敌机位置：", get_pos(enemy))
+                tmp = get_pos(enemy)
+                if len(tmp) > 0:
+                    emy_pos.append(tmp)
+            print("敌机位置列表：", emy_pos)
+
             e1_obs = pygame.Rect(0, 0, 0, 0)
             e2_obs = pygame.Rect(0, 0, 0, 0)
             m_obs = pygame.Rect(0, 0, 0, 0)
-
+            exeAgent_obs = [e1_obs, e2_obs]
             if game_over == False:
+                agt_pos = []
+                i = 0
                 # 随机选择动作移动
                 for exeAgent in agent.values():
                     action = random.randint(0, 4)
-                    exeAgent.update(action,self.size)
+                    action = 0
+                    exeAgent.update(action, self.size)
                     print(exeAgent.rect)
                     # exeAgent位置
-                    e1_obs = exeAgent.rect.copy()
+                    exeAgent_obs[i] = exeAgent.rect.copy()
                     # 原位置放大后的矩形
-                    e1_obs.inflate_ip(30, 30)
-                action1= random.randint(0, 4)
+                    # exeAgent_obs[i].inflate_ip(100, 200)
+                    i += 1
+
+                e1_obs = exeAgent_obs[0]
+                e1_obs.inflate_ip(100, 200)
+                e2_obs = exeAgent_obs[1]
+                e2_obs.inflate_ip(100, 200)
+                # print(e1_obs)
+                # print(e2_obs)
+
+                action1 = random.randint(0, 4)
+                action1 = 0
                 mngAgent.update(action1,self.size)
+                m_pos = get_pos(mngAgent)
+                agt_pos.append(m_pos)
+                m_obs = mngAgent.rect.copy()
+                m_obs.inflate_ip(400, 400)
+
+
+                e1_emy = []
+                e2_emy = []
+                m_emy = []
+                obs_emy = []  # 联合观测范围
+                e1_task_id = []
+                e2_task_id = []
+                m_task_id = []
+                task_id = []  # 任务列表
                 for enemy in self.enemies.sprites():
-                    if (enemy.rect[0] > 0) & (enemy.rect[1] > 0):
-                        print(enemy.rect)
-                        if (enemy.rect[0] >= e1_obs[0]) & (enemy.rect[1] >= e1_obs[1]) & (
-                                enemy.rect[0] + 32 <= e1_obs[0] + 94) & (enemy.rect[1] + 32 <= e1_obs[1] + 94):
-                            print("e1观测到敌机位置：")
-                            print(enemy.rect)
-                        else:
-                            print("None")
-                        if (enemy.rect[0] >= e2_obs[0]) & (enemy.rect[1] >= e2_obs[1]) & (
-                                enemy.rect[0] + 32 <= e2_obs[0] + 94) & (enemy.rect[1] + 32 <= e2_obs[1] + 94):
-                            print("e2观测到敌机位置：")
-                            print(enemy.rect)
-                        else:
-                            print("None")
-                        if (enemy.rect[0] >= m_obs[0]) & (enemy.rect[1] >= m_obs[1]) & (
-                                enemy.rect[0] + 32 <= m_obs[0] + 164) & (enemy.rect[1] + 32 <= m_obs[1] + 164):
-                            print("m观测到敌机位置：")
-                            print(enemy.rect)
-                        else:
-                            print("None")
+                    flag1 = e1_obs.contains(enemy.rect)
+                    if flag1 == 1:
+                        tmp = get_pos(enemy)
+                        e1_emy.append(tmp)
+                        e1_task_id.append(enemy.id)
+
+                    flag2 = e2_obs.contains(enemy.rect)
+                    if flag2 == 1:
+                        tmp = get_pos(enemy)
+                        e2_emy.append(tmp)
+                        e2_task_id.append(enemy.id)
+
+                    flag3 = m_obs.contains(enemy.rect)
+                    if flag3 == 1:
+                        tmp = get_pos(enemy)
+                        m_emy.append(tmp)
+                        m_task_id.append(enemy.id)
+                print("e1观测到敌机位置：", e1_emy)
+                print("e2观测到敌机位置：", e2_emy)
+                print("m观测到敌机位置：", m_emy)
+                obs_emy = (e1_emy + e2_emy + m_emy)
+                print("联合观测范围：", obs_emy)
+                task_id = e1_task_id + e2_task_id + m_task_id
+                print("敌机任务列表：", task_id)
+                print("")
+                print("")
+
+
             self.bullets.update()
             for entity in self.all_sprites:
                 self.screen.blit(entity.image, entity.rect)
@@ -138,6 +185,8 @@ class environment:
             show_text(self.screen, (20, 60), 'MngAgent:1 ExeAgent'+str(len(agent)), (0, 0, 255), False, font_size=28)
             pygame.display.flip()
 
+
+
     def get_observation(self, handle):
         pass
 
@@ -152,6 +201,13 @@ def show_text(surface_handle, pos, text, color, font_bold=False, font_size=13, f
     surface_handle.blit(text_fmt, pos)  # 绘制文字
 
 
+def get_pos(agent):
+    tmp = []
+    x = agent.rect[0]
+    y = agent.rect[1]
+    tmp.append(x)
+    tmp.append(y)
+    return tmp
 
 
 

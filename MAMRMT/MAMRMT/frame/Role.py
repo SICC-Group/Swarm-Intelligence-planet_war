@@ -37,7 +37,7 @@ class ManagerAgent(Role):
         image = pygame.image.load('../source/GodPlane.png').convert()  # convert 转换像素格式
         self.image = pygame.transform.scale(image, (64, 64))  # transform 对图像翻转缩放旋转
         self.image.set_colorkey((255, 255, 255), RLEACCEL)  # 设置飞机透明度
-        self.rect = self.image.get_rect(center=(800/3, 500))  # set the plane's init position
+        self.rect = self.image.get_rect(center=(200, 500))  # set the plane's init position
         self.obs_size = 100
 
 
@@ -47,7 +47,7 @@ class ExecuteAgent(Role):
         image = pygame.image.load('../source/mngPlane.png').convert()  # convert 转换像素格式
         self.image = pygame.transform.scale(image, (64, 64))  # transform 对图像翻转缩放旋转
         self.image.set_colorkey((255, 255, 255), RLEACCEL)  # 设置飞机透明度
-        self.rect = self.image.get_rect(center=(800*2 / 3, 500))  # set the plane's init position
+        self.rect = self.image.get_rect(center=(400, 400))  # set the plane's init position
         self.obs_size = 20
 
     def execute(self):
