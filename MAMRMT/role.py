@@ -1,13 +1,58 @@
 import random
 import pygame
 from pygame.locals import *
-from MAMRMT.frame import *
-import json
-f = open('FieldInfo.ini', 'r')
-text = f.read()
-cfg = json.loads(text)
-width = cfg['field']['field_width']
-hight = cfg['field']['field_length']
+
+width = 800
+hight = 600
+
+p_pos = []
+
+class Role(pygame.sprite.Sprite):
+    def __init__(self, roleId):
+        super(Role,self).__init__()
+        self.roleId = roleId
+
+    def composeTask(self,taskId, rank, status):
+        self.task = Task(taskId, rank, status)
+
+    def updateRole(self, targetRoleId):
+        self.roleId = targetRoleId
+
+    def assessCapacity(self, roleId):
+        # if roleId == num,turn to capacity of corresponding role
+        pass
+
+    def printId(self):
+        print('the roleId is ',self.roleId,',corresponding taskId is ',self.roleId)
+
+    def run(self):
+        pass
+
+# 定义Player类,sprite为操作移动图像类，即agent类
+class Player(Role):
+    def __init__(self, roleId):
+        Role.__init__(self, roleId)    # 继承sprite的初始化
+
+    def update(self, action):
+        if action == 0:
+            self.rect.move_ip(0, 0)
+        if action == 1:
+            self.rect.move_ip(0, -10)
+        if action == 2:
+            self.rect.move_ip(0, 10)
+        if action == 3:
+            self.rect.move_ip(-10, 0)
+        if action == 4:
+            self.rect.move_ip(10, 0)
+        # 限制plane的移动范围，不能超出屏幕
+        if self.rect.left < 0:
+            self.rect.left = 0
+        elif self.rect.right > width:
+            self.rect.right = width
+        if self.rect.top < 0:
+            self.rect.top = 0
+        elif self.rect.bottom > hight:
+            self.rect.bottom = hight
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -23,112 +68,114 @@ class Enemy(pygame.sprite.Sprite):
         else:
             image = pygame.image.load('source/LXPlane.png').convert()
         self.image = pygame.transform.scale(image, (32, 32))
-        self.init_position = [16, 100, 200, 300, 400, 500, 600, 700, 784]  # 表示列
+        self.init_position = [10, 100, 200, 300, 400, 500, 600, 700, 790]  # 表示列
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect(
-            center=(self.init_position[random.randint(0, 8)], 0))  # 从上往下，第0行，position为列
+            center=(self.init_position[random.randint(0, 8)], 0)) # 从上往下，第0行，position为列
         # self.speed = random.randint(1, 2)
-        self.speed = cfg['agent']['enemy']['enemy_speed']
-        self.n_enemy = cfg['agent']['enemy']['n_enemy']
+        self.speed = 1
+        self.n_enemy = 100
 
     def update(self):
         self.rect.move_ip(0, self.speed)
         if self.rect.bottom > hight:
             self.kill()
 
-    def get_pos(self):
-        self.x = self.rect[0]
-        self.y = self.rect[1]
-        return self.x, self.y
+class obs_rec(pygame.sprite.Sprite):
+    def __init__(self):
+        self.color = (0, 0, 0, 0)
+        self.rect = ()
 
 
-class ManageAgent_pw(ManageAgent,pygame.sprite.Sprite):
-    def __init__(self,roleId):
-        ManageAgent.__init__(self,roleId)
-        pygame.sprite.Sprite.__init__(self)
+class ManageAgent(Player):
+    def __init__(self, roleId):
+        Player.__init__(self, roleId)
         image = pygame.image.load('source/GodPlane.png').convert()  # convert 转换像素格式
         self.image = pygame.transform.scale(image, (64, 64))  # transform 对图像翻转缩放旋转
         self.image.set_colorkey((255, 255, 255), RLEACCEL)  # 设置飞机透明度
-        self.rect = self.image.get_rect(center=(width / 2, 500))  # set the plane's init position
-
-    def update(self, action):
-        if action == 0:                  # 原地不动
-            self.rect.move_ip(0, 0)
-        if action == 1:                  # 向上移动
-            self.rect.move_ip(0, -5)
-        if action == 2:                  # 向下移动
-            self.rect.move_ip(0, 5)
-        if action == 3:                  # 向左移动
-            self.rect.move_ip(-5, 0)
-        if action == 4:                  # 向右移动
-            self.rect.move_ip(5, 0)
-        # 限制plane的移动范围，不能超出屏幕
-        if self.rect.left < 0:
-            self.rect.left = 0
-        elif self.rect.right > width:
-            self.rect.right = width
-        if self.rect.top < 0:
-            self.rect.top = 0
-        elif self.rect.bottom > hight:
-            self.rect.bottom = hight
-
-    def get_pos(self):
-        self.x = self.rect[0]
-        self.y = self.rect[1]
-        return self.x, self.y
+        self.rect = self.image.get_rect(center=(width / 3, 500))  # set the plane's init position
+        self.obs_size = 100
 
 
-class ExecuteAgent_pw(ExecuteAgent,pygame.sprite.Sprite):
-    def __init__(self,roleId):
-        ExecuteAgent.__init__(self,roleId)
-        pygame.sprite.Sprite.__init__(self)
+    def receiveTask(self, taskList):
+        pass
+
+    def divideTask(self):
+        pass
+
+    def releaseTask(self):
+        # according taskId assign to role
+        pass
+
+    def assignTask(self):
+        pass
+
+    def feedback(self):
+        pass
+
+
+class ExecuteAgent(Player):
+    def __init__(self, roleId):
+        Player.__init__(self, roleId)
         image = pygame.image.load('source/mngPlane.png').convert()  # convert 转换像素格式
         self.image = pygame.transform.scale(image, (64, 64))  # transform 对图像翻转缩放旋转
         self.image.set_colorkey((255, 255, 255), RLEACCEL)  # 设置飞机透明度
-        self.rect = self.image.get_rect(center=(width / 2, 500))  # set the plane's init position
+        self.rect = self.image.get_rect(center=(width *2 / 3, 500))  # set the plane's init position
+        # self.Rect.copy = self.rect.copy
+        self.obs_size = 20
 
-    def get_pos(self):
-        self.x = self.rect[0]
-        self.y = self.rect[1]
-        return self.x,self.y
+    def executeTask(self,nature):
+        # if nature == num,turn to execute corresponding action
+        return '完成'
 
-    def update(self, action):
-        if action == 0:                  # 原地不动
-            self.rect.move_ip(0, 0)
-        if action == 1:                  # 向上移动
-            self.rect.move_ip(0, -5)
-        if action == 2:                  # 向下移动
-            self.rect.move_ip(0, 5)
-        if action == 3:                  # 向左移动
-            self.rect.move_ip(-5, 0)
-        if action == 4:                  # 向右移动
-            self.rect.move_ip(5, 0)
-        # 限制plane的移动范围，不能超出屏幕
-        if self.rect.left < 0:
-            self.rect.left = 0
-        elif self.rect.right > width:
-            self.rect.right = width
-        if self.rect.top < 0:
-            self.rect.top = 0
-        elif self.rect.bottom > hight:
-            self.rect.bottom = hight
+    def noticeMngAgent(self):
+        pass
+
+    def receiveMsg(self):
+        pass
+
+    def exceptionHandle(self):
+        pass
 
 
-def taskOrder(graph):
-    in_degrees = dict((u, 0) for u in graph)  # 初始化所有顶点入度为0
-    for u in graph:
-        for v in graph[u]:
-            in_degrees[v] += 1  # 计算每个顶点的入度
-    Q = [u for u in in_degrees if in_degrees[u] == 0]  # 筛选入度为0的顶点
-    Seq = []
-    while Q:
-        u = Q.pop()  # 默认从最后一个删除
-        Seq.append(u)
-        for v in graph[u]:
-            in_degrees[v] -= 1  # 移除其所有指向
-            if in_degrees[v] == 0:
-                Q.append(v)  # 再次筛选入度为0的顶点
-    return Seq
+class Task:
+    def __init__(self, taskId, rank, status):
+        self.taskId = taskId
+        self.rank = rank
+        self.status = status
+
+    def init(self):
+        pass
+
+    def updateStatus(self, newStatus):
+        self.status = newStatus
+
+
+# class ObservationTask(Task):
+#     def __init__(self, taskId, rank, status, deadline, etiTime, target, vision):
+#         Task.__init__(self, taskId, rank, status, deadline, etiTime, target)
+#         self.vision = vision
+#
+#
+# class ContactTask(Task):
+#     def __init__(self, taskId, rank, status, deadline, etiTime, target, endStatus, targetEndWt):
+#         Task.__init__(self, taskId, rank, status, deadline, etiTime, target)
+#         self.endStatus = endStatus
+#         self.targetEndWt = targetEndWt
+#
+#
+# class DeliverTask(Task):
+#     def __init__(self, taskId, rank, status, deadline, etiTime, target, targetEndwt, relSpeed):
+#         Task.__init__(self, taskId, rank, status, deadline, etiTime, target)
+#         self.targetEndwt = targetEndwt
+#         self.relSpeed = relSpeed
+#
+#
+# class TransmitTask(Task):
+#     def __init__(self, taskId, rank, status, deadline, etiTime, target, toRole, news):
+#         Task.__init__(self, taskId, rank, status, deadline, etiTime, target)
+#         self.toRole = toRole
+#         self.news = news
 
 
 # 定义子弹类
@@ -139,7 +186,7 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (16, 16))
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
         self.rect = self.image.get_rect(center=(x_position, y_position))
-        self.speed = cfg['agent']['bullet']['bullet_speed']
+        self.speed = 2
 
     def update(self):
         self.rect.move_ip(0, -self.speed)
@@ -162,6 +209,16 @@ class Cloud(pygame.sprite.Sprite):
             self.kill()
 
 
+# if __name__ == '__main__':
+#     r1 = Role(0, 1)  # capacity 1 is attack
+#     r1.printId()
+#     r1.composeTask(0, 0,'未完成')
+#     r2 = Role(1, -1)
+#     r2.printId()
+#     r2.composeTask(1, 0,'未完成')
+#     x = random.randint(0, 1)
+#     assignMAE(x)
+#
 
 
 
