@@ -1,4 +1,4 @@
-from MAMRMT.frame.Role import *
+from Swarm_Intelligence_planet_war.MAMRMT.frame.Role import *
 #抽象工厂
 class AgentFactory:
     def createManager(self,roleId):

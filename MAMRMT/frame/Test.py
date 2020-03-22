@@ -1,6 +1,6 @@
-from MAMRMT.frame.AlgorithnmFactory import *
+from Swarm_Intelligence_planet_war.MAMRMT.frame.AlgorithnmFactory import *
 import random
-import MAMRMT.frame.blackboard
+import Swarm_Intelligence_planet_war.MAMRMT.frame.blackboard
 
 class Test:
     def __init__(self,factory):

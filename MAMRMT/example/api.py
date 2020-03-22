@@ -1,7 +1,7 @@
 import random
-from MAMRMT.frame.builtin.env import *
-from MAMRMT.frame.Test import *
-from MAMRMT.frame.environment import *
+from Swarm_Intelligence_planet_war.MAMRMT.frame.builtin.env import *
+from Swarm_Intelligence_planet_war.MAMRMT.frame.Test import *
+from Swarm_Intelligence_planet_war.MAMRMT.frame.environment import *
 if __name__ == "__main__":
     # init the game
     env = environment(800, 600)

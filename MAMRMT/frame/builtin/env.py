@@ -2,8 +2,8 @@ import pygame
 import random
 import os.path
 from datetime import datetime
-from MAMRMT.frame.builtin.built import *
-from MAMRMT.frame.Test import *
+from Swarm_Intelligence_planet_war.MAMRMT.frame.builtin.built import *
+from Swarm_Intelligence_planet_war.MAMRMT.frame.Test import *
 
 class environment:
 
