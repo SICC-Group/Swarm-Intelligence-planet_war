@@ -36,7 +36,10 @@ class environment:
         self.all_sprites.add(mngAgent)
         for exeAgent in agent.values():
             self.all_sprites.add(exeAgent)
-        agent[1].rect.move_ip(300, 0)
+        l = []
+        for key in agent:
+            l.append(key)
+        agent[l[0]].rect.move_ip(300, 0)
         pygame.display.flip()
         # 初始化参数
         start_time = datetime.now()
