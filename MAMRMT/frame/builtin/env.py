@@ -36,13 +36,15 @@ class environment:
         self.all_sprites.add(mngAgent)
         for exeAgent in agent.values():
             self.all_sprites.add(exeAgent)
+        # 执行agent初始坐标
         l = []
         for key in agent:
             l.append(key)
-        agent[l[0]].rect.move_ip(300, 0)
+        agent[l[0]].rect.move_ip(600, 0)
         pygame.display.flip()
         # 初始化参数
         start_time = datetime.now()
+        task_n = 50 # 总任务数
         player_hit_enemies = 0
         enemy_num = 0
         running = True
@@ -58,11 +60,12 @@ class environment:
                 # 结束游戏
                 elif event.type == QUIT:
                     running = False
-                # 敌机
+                # # 敌机
                 elif event.type == self.ADDENEMY:
                     enemy_num += 1
                     new_enemy = Enemy(self.size)
                     new_enemy.id = enemy_num
+
                     self.enemies.add(new_enemy)
                     self.all_sprites.add(new_enemy)
                 # 云朵
@@ -84,14 +87,15 @@ class environment:
 
             # e_pos 记录当前页面的敌机位置
             emy_pos = []
+            emy_pos_dic = {}
             for enemy in self.enemies.sprites():
-                print("敌机编号：", enemy.id)
-                print("敌机位置：", get_pos(enemy))
+                # print("敌机编号：", enemy.id)
+                # print("敌机位置：", get_pos(enemy))
                 tmp = get_pos(enemy)
+                emy_pos_dic[enemy.id] = tmp
                 if len(tmp) > 0:
                     emy_pos.append(tmp)
-            print("敌机位置列表：", emy_pos)
-
+            print("敌机位置列表：", emy_pos_dic)
             e1_obs = pygame.Rect(0, 0, 0, 0)
             e2_obs = pygame.Rect(0, 0, 0, 0)
             m_obs = pygame.Rect(0, 0, 0, 0)
@@ -100,17 +104,20 @@ class environment:
                 agt_pos = []
                 i = 0
                 # 随机选择动作移动
+
                 for exeAgent in agent.values():
                     action = random.randint(0, 4)
                     action = 0
                     exeAgent.update(action, self.size)
-                    print(exeAgent.rect)
+                    tmp = get_pos(exeAgent)
+                    agt_pos.append(tmp)
                     # exeAgent位置
                     exeAgent_obs[i] = exeAgent.rect.copy()
                     # 原位置放大后的矩形
                     # exeAgent_obs[i].inflate_ip(100, 200)
                     i += 1
-
+                agt_pos.append(get_pos(mngAgent))
+                print("执行a、管理a位置:",agt_pos)
                 e1_obs = exeAgent_obs[0]
                 e1_obs.inflate_ip(100, 200)
                 e2_obs = exeAgent_obs[1]
@@ -134,7 +141,9 @@ class environment:
                 e1_task_id = []
                 e2_task_id = []
                 m_task_id = []
+                obs_task = 0
                 task_id = []  # 任务列表
+                j = 0 # 记录敌机数量
                 for enemy in self.enemies.sprites():
                     flag1 = e1_obs.contains(enemy.rect)
                     if flag1 == 1:
@@ -153,25 +162,59 @@ class environment:
                         tmp = get_pos(enemy)
                         m_emy.append(tmp)
                         m_task_id.append(enemy.id)
+
                 print("e1观测到敌机位置：", e1_emy)
                 print("e2观测到敌机位置：", e2_emy)
                 print("m观测到敌机位置：", m_emy)
                 obs_emy = (e1_emy + e2_emy + m_emy)
                 print("联合观测范围：", obs_emy)
-                task_id = e1_task_id + e2_task_id + m_task_id
+                task_id = [0]+e1_task_id + e2_task_id + m_task_id
+                j = 0
+                for enemy in self.enemies.sprites():
+                    j += 1
+                    if j % 5 == 0:
+                        task_id.append(0)
                 print("敌机任务列表：", task_id)
+                att_task, obs_task = mngAgent.divideTask(task_id)
+                print("攻击任务：",att_task)
+                print("观测任务：",obs_task)
+                todo_list = mngAgent.assignTask(agt_pos, att_task, obs_task, emy_pos_dic)
+                print("任务分配：",todo_list)
+
                 print("")
                 print("")
-
-
+                if len(att_task) > 0:
+                    e1_atk = []
+                    for exeAt1 in todo_list[1]:
+                        enemy_id = exeAt1.target
+                        e1_atk.append(enemy_id)
+                    e2_atk = []
+                    for exeAt2 in todo_list[2]:
+                        enemy_id = exeAt2.target
+                        e2_atk.append(enemy_id)
+                    at_list =[e1_atk,e2_atk]
+                    i = 0
+                    for exeAgent in agent.values():
+                        print('exeAgent:',exeAgent,'i:',i)
+                        if len(at_list[i]) > 0:
+                            act = exeAgent.execute(exeAgent.rect, at_list[i], emy_pos_dic)
+                            exeAgent.update(act, self.size)
+                        else:
+                            i += 1
+                            continue
+                        i += 1
             self.bullets.update()
             for entity in self.all_sprites:
                 self.screen.blit(entity.image, entity.rect)
 
             # 击中敌人
+
             if pygame.sprite.groupcollide(self.bullets, self.enemies, True, True):
                 player_hit_enemies += 1
-                if player_hit_enemies >= 50:
+                task_undo = task_n - player_hit_enemies
+                # 管理a接收任务
+                task_undo = mngAgent.receiveTask(task_undo)
+                if player_hit_enemies >= task_n:
                     game_over = True
 
             # 游戏结束，屏幕显示

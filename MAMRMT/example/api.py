@@ -6,7 +6,7 @@ if __name__ == "__main__":
     # init the game
     env = environment(800, 600)
     # init models
-    test = Test(ContractNetFactory())
+    test = Test(GeneticFactory())
     # init env and agents
     list = [0, 1, 2]
     index = random.randint(0, 2)

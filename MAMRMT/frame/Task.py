@@ -25,8 +25,7 @@ class Task:
             status = 1
 
 
-
-class ShootTask(Task):
+class AttackTask(Task):
     def __init__(self, taskId, priority, status, target):
         Task.__init__(self, taskId, priority, status, target)
         # taskId:1--50
