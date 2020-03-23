@@ -21,7 +21,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(
             center=(self.init_position[random.randint(0, 14)], 0)) # 从上往下，第0行，position为列
         self.speed = 1
-        self.n_enemy = 100
+        self.n_enemy = 50
         self.id = 0
 
     def update(self):

@@ -18,7 +18,7 @@ class environment:
         self.background.fill((135, 206, 250))
         # 自定义事件(敌机、云朵、发射子弹)
         self.ADDENEMY = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.ADDENEMY, 300)
+        pygame.time.set_timer(self.ADDENEMY, 900)
         self.ADDCLOUD = pygame.USEREVENT + 2
         pygame.time.set_timer(self.ADDCLOUD, 1000)
         self.ADDBULLET = pygame.USEREVENT + 3
@@ -104,11 +104,12 @@ class environment:
                 agt_pos = []
                 i = 0
                 # 随机选择动作移动
-
+                action = random.randint(0, 4)
+                mngAgent.update(action, self.size)
                 for exeAgent in agent.values():
-                    action = random.randint(0, 4)
-                    action = 0
-                    exeAgent.update(action, self.size)
+                    # action = random.randint(0, 4)
+                    # action = 0
+                    # exeAgent.update(action, self.size)
                     tmp = get_pos(exeAgent)
                     agt_pos.append(tmp)
                     # exeAgent位置

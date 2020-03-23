@@ -73,7 +73,7 @@ class ManagerAgent(Role):
         todo_list.append(mngtask)
         emy_id = 0
         if len(att_task)>0:
-        # 算法输入为观测信息及任务需求（任务优先程度，任务难度，任务关系，任务限制），输出为agent的todo_taskList todo_list = [[0],[1,5,10],[5,8,9]]
+            # 算法输入为观测信息及任务需求（任务优先程度，任务难度，任务关系，任务限制），输出为agent的todo_taskList todo_list = [[0],[1,5,10],[5,8,9]]
             for att_t in att_task:
                 emy_id = att_t.target
                 emy_pos = emy_pos_dic[emy_id]
@@ -118,7 +118,7 @@ class ExecuteAgent(Role):
         image = pygame.image.load('../source/mngPlane.png').convert()  # convert 转换像素格式
         self.image = pygame.transform.scale(image, (64, 64))  # transform 对图像翻转缩放旋转
         self.image.set_colorkey((255, 255, 255), RLEACCEL)  # 设置飞机透明度
-        self.rect = self.image.get_rect(center=(100, 400))  # set the plane's init position
+        self.rect = self.image.get_rect(center=(100, 500))  # set the plane's init position
         self.obs_size = 20
 
     def execute(self):
@@ -127,6 +127,7 @@ class ExecuteAgent(Role):
 
 class ManagerContractNet(ManagerAgent):
     print("ContractNet")
+
 
 class ExecuteContractNet(ExecuteAgent):
     def execute(self):
