@@ -8,14 +8,10 @@ class blackboard:
     def unregister(self,role):
         self.observe.remove(role)
 
-    '一对多通信'
-    def notify(self):
-        for role in self.observe:
-            role.execute()
-
-    '一对一通信'
-    def one(self,role):
-        role.execute()
+    #一对多通信
+    def notify(self,task):
+        for exeAgent in self.observe:
+            exeAgent.execute(task[exeAgent.roleId], 2)
 
 
 
