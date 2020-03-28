@@ -3,7 +3,7 @@ from pygame.locals import *
 import random
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self,size):
+    def __init__(self,size,id):
         super(Enemy, self).__init__()
         self.size=size
         index = random.randint(0, 3)
@@ -18,11 +18,9 @@ class Enemy(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(image, (32, 32))
         self.init_position = [10, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 790]  # 表示列
         self.image.set_colorkey((255, 255, 255), RLEACCEL)
-        self.rect = self.image.get_rect(
-            center=(self.init_position[random.randint(0, 14)], 0)) # 从上往下，第0行，position为列
+        self.rect = self.image.get_rect(center=(self.init_position[random.randint(0, 14)], 0)) # 从上往下，第0行，position为列
         self.speed = 1
-        self.n_enemy = 100
-        self.id = 0
+        self.id =id
 
     def update(self):
         self.rect.move_ip(0, self.speed)
